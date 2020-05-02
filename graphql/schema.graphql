@@ -1,0 +1,67 @@
+# Node infomation
+type NodeInfo {
+  ip: String!
+  nodeId: Int!
+  isConnected: Boolean!
+  playerName: String!
+}
+
+type Query {
+  # Infomation about this server
+  serverInfo: ServerInfo!
+  # Traffic infomation last second
+  trafficInfo(token: String!): TrafficInfo!
+  # Current rooms
+  room: [RoomInfo!]!
+}
+
+# Room infomation
+type RoomInfo {
+  # the ip of room
+  ip: String!
+  # the content id of the game
+  contentId: String!
+  # host player name
+  hostPlayerName: String!
+  # session id
+  sessionId: String!
+  # node count max
+  nodeCountMax: Int!
+  # node count
+  nodeCount: Int!
+  # nodes
+  nodes: [NodeInfo!]!
+  # advertise data length
+  advertiseDataLen: Int!
+  # advertise data in hex
+  advertiseData: String!
+}
+
+# Infomation about this server
+type ServerInfo {
+  # The number of online clients
+  online: Int!
+  # The number of idle clients(not sending packets for 30s)
+  idle: Int!
+  # The version of the server
+  version: String!
+}
+
+type Subscription {
+  # Infomation about this server
+  serverInfo: ServerInfo!
+  # Traffic infomation last second
+  trafficInfo(token: String!): TrafficInfo!
+}
+
+# Traffic infomation
+type TrafficInfo {
+  # upload bytes last second
+  upload: Int!
+  # download bytes last second
+  download: Int!
+  # upload packets last second
+  uploadPacket: Int!
+  # download packets last second
+  downloadPacket: Int!
+}
