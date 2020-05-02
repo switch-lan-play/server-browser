@@ -1,0 +1,3 @@
+[submodule "server-list"]
+	path = server-list
+	url = https://github.com/switch-lan-play/server-list.git
