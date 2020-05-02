@@ -5,3 +5,10 @@ query ServerInfo {
     version
   }
 }
+subscription SubServerInfo {
+  serverInfo {
+    online
+    idle
+    version
+  }
+}

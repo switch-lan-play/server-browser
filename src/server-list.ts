@@ -1,4 +1,7 @@
 import List from 'server-list/server-list.json'
-import { ServerDescription } from './types'
+import { ServerDescription as SD } from './types'
 
-export const ServerList: ServerDescription[] = List
+export type ServerDescription = SD
+export const ServerList: ServerDescription[] = [...List, {
+  server: 'localhost:12345'
+}]

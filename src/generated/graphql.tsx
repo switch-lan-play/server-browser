@@ -81,6 +81,17 @@ export type ServerInfoQuery = (
   ) }
 );
 
+export type SubServerInfoSubscriptionVariables = {};
+
+
+export type SubServerInfoSubscription = (
+  { __typename?: 'Subscription' }
+  & { serverInfo: (
+    { __typename?: 'ServerInfo' }
+    & Pick<ServerInfo, 'online' | 'idle' | 'version'>
+  ) }
+);
+
 
 export const ServerInfoDocument = gql`
     query ServerInfo {
@@ -116,3 +127,33 @@ export function useServerInfoLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryH
 export type ServerInfoQueryHookResult = ReturnType<typeof useServerInfoQuery>;
 export type ServerInfoLazyQueryHookResult = ReturnType<typeof useServerInfoLazyQuery>;
 export type ServerInfoQueryResult = ApolloReactCommon.QueryResult<ServerInfoQuery, ServerInfoQueryVariables>;
+export const SubServerInfoDocument = gql`
+    subscription SubServerInfo {
+  serverInfo {
+    online
+    idle
+    version
+  }
+}
+    `;
+
+/**
+ * __useSubServerInfoSubscription__
+ *
+ * To run a query within a React component, call `useSubServerInfoSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useSubServerInfoSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSubServerInfoSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSubServerInfoSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<SubServerInfoSubscription, SubServerInfoSubscriptionVariables>) {
+        return ApolloReactHooks.useSubscription<SubServerInfoSubscription, SubServerInfoSubscriptionVariables>(SubServerInfoDocument, baseOptions);
+      }
+export type SubServerInfoSubscriptionHookResult = ReturnType<typeof useSubServerInfoSubscription>;
+export type SubServerInfoSubscriptionResult = ApolloReactCommon.SubscriptionResult<SubServerInfoSubscription>;
