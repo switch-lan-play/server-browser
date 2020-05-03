@@ -37,7 +37,19 @@ interface PingResult {
 const PingText = `{"id":"1","type":"start","payload":{"variables":{},"extensions":{},"operationName":null,"query":"subscription{serverInfo{idle}}"}}`
 export function usePing({ server, interval = 10 * 1000, timeout = 10 * 1000}: PingOptions) {
   const [ result, setResult ] = useState<PingResult | undefined>(undefined)
+  const [ hidden, setHidden ] = useState(false)
   useEffect(() => {
+    const handleVisibilityChange = () => {
+      setHidden(document.hidden)
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange, false)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
+  useEffect(() => {
+    console.log('hidden', hidden)
+    if (hidden) {
+      return // do nothing
+    }
     let abort = () => {}
     const ping = () => new Promise<number>((res, rej) => {
       setTimeout(() => rej(new Error('timeout')), timeout)
@@ -74,7 +86,7 @@ export function usePing({ server, interval = 10 * 1000, timeout = 10 * 1000}: Pi
     }).then(ping => setResult({
       ping,
       updateAt: new Date()
-    }))
+    }), e => console.error(e))
     if (interval > 0) {
       let id: number | undefined = undefined
       const run = async () => {
@@ -92,7 +104,7 @@ export function usePing({ server, interval = 10 * 1000, timeout = 10 * 1000}: Pi
         abort()
       }
     }
-  }, [ server, timeout, interval ])
+  }, [ server, timeout, interval, hidden ])
 
   return result
 }
