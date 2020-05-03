@@ -5,6 +5,31 @@ query ServerInfo {
     version
   }
 }
+query ServerRoomOld {
+  room {
+    ip
+    contentId
+    hostPlayerName
+  }
+}
+query ServerRoom {
+  room {
+    ip
+    contentId
+    hostPlayerName
+    sessionId
+    nodeCountMax
+    nodeCount
+    nodes {
+      ip
+      nodeId
+      isConnected
+      playerName
+    }
+    advertiseDataLen
+    advertiseData
+  }
+}
 subscription SubServerInfo {
   serverInfo {
     online

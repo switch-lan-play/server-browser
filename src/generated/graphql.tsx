@@ -81,6 +81,32 @@ export type ServerInfoQuery = (
   ) }
 );
 
+export type ServerRoomOldQueryVariables = {};
+
+
+export type ServerRoomOldQuery = (
+  { __typename?: 'Query' }
+  & { room: Array<(
+    { __typename?: 'RoomInfo' }
+    & Pick<RoomInfo, 'ip' | 'contentId' | 'hostPlayerName'>
+  )> }
+);
+
+export type ServerRoomQueryVariables = {};
+
+
+export type ServerRoomQuery = (
+  { __typename?: 'Query' }
+  & { room: Array<(
+    { __typename?: 'RoomInfo' }
+    & Pick<RoomInfo, 'ip' | 'contentId' | 'hostPlayerName' | 'sessionId' | 'nodeCountMax' | 'nodeCount' | 'advertiseDataLen' | 'advertiseData'>
+    & { nodes: Array<(
+      { __typename?: 'NodeInfo' }
+      & Pick<NodeInfo, 'ip' | 'nodeId' | 'isConnected' | 'playerName'>
+    )> }
+  )> }
+);
+
 export type SubServerInfoSubscriptionVariables = {};
 
 
@@ -127,6 +153,85 @@ export function useServerInfoLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryH
 export type ServerInfoQueryHookResult = ReturnType<typeof useServerInfoQuery>;
 export type ServerInfoLazyQueryHookResult = ReturnType<typeof useServerInfoLazyQuery>;
 export type ServerInfoQueryResult = ApolloReactCommon.QueryResult<ServerInfoQuery, ServerInfoQueryVariables>;
+export const ServerRoomOldDocument = gql`
+    query ServerRoomOld {
+  room {
+    ip
+    contentId
+    hostPlayerName
+  }
+}
+    `;
+
+/**
+ * __useServerRoomOldQuery__
+ *
+ * To run a query within a React component, call `useServerRoomOldQuery` and pass it any options that fit your needs.
+ * When your component renders, `useServerRoomOldQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useServerRoomOldQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useServerRoomOldQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ServerRoomOldQuery, ServerRoomOldQueryVariables>) {
+        return ApolloReactHooks.useQuery<ServerRoomOldQuery, ServerRoomOldQueryVariables>(ServerRoomOldDocument, baseOptions);
+      }
+export function useServerRoomOldLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ServerRoomOldQuery, ServerRoomOldQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<ServerRoomOldQuery, ServerRoomOldQueryVariables>(ServerRoomOldDocument, baseOptions);
+        }
+export type ServerRoomOldQueryHookResult = ReturnType<typeof useServerRoomOldQuery>;
+export type ServerRoomOldLazyQueryHookResult = ReturnType<typeof useServerRoomOldLazyQuery>;
+export type ServerRoomOldQueryResult = ApolloReactCommon.QueryResult<ServerRoomOldQuery, ServerRoomOldQueryVariables>;
+export const ServerRoomDocument = gql`
+    query ServerRoom {
+  room {
+    ip
+    contentId
+    hostPlayerName
+    sessionId
+    nodeCountMax
+    nodeCount
+    nodes {
+      ip
+      nodeId
+      isConnected
+      playerName
+    }
+    advertiseDataLen
+    advertiseData
+  }
+}
+    `;
+
+/**
+ * __useServerRoomQuery__
+ *
+ * To run a query within a React component, call `useServerRoomQuery` and pass it any options that fit your needs.
+ * When your component renders, `useServerRoomQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useServerRoomQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useServerRoomQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ServerRoomQuery, ServerRoomQueryVariables>) {
+        return ApolloReactHooks.useQuery<ServerRoomQuery, ServerRoomQueryVariables>(ServerRoomDocument, baseOptions);
+      }
+export function useServerRoomLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ServerRoomQuery, ServerRoomQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<ServerRoomQuery, ServerRoomQueryVariables>(ServerRoomDocument, baseOptions);
+        }
+export type ServerRoomQueryHookResult = ReturnType<typeof useServerRoomQuery>;
+export type ServerRoomLazyQueryHookResult = ReturnType<typeof useServerRoomLazyQuery>;
+export type ServerRoomQueryResult = ApolloReactCommon.QueryResult<ServerRoomQuery, ServerRoomQueryVariables>;
 export const SubServerInfoDocument = gql`
     subscription SubServerInfo {
   serverInfo {

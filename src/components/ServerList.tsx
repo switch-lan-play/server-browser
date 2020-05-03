@@ -9,16 +9,42 @@ import ExpandMore from '@material-ui/icons/ExpandMore'
 import PeopleIcon from '@material-ui/icons/People'
 import { ServerList as ServerListJson, ServerDescription } from 'server-list'
 import { ServerProvider } from './ServerProvider'
-import { useSubServerInfoSubscription } from 'generated/graphql'
+import { useSubServerInfoSubscription, useServerRoomQuery } from 'generated/graphql'
 import { useResult, usePing } from 'hooks'
+import Games from 'games.json'
+import { makeStyles } from '@material-ui/core/styles'
+
+const GameMap: Record<string, { name: string } | undefined> = Games
+const useStyles = makeStyles((theme) => ({
+  nested: {
+    paddingLeft: theme.spacing(4),
+  },
+}))
 
 const ServerDetail: React.FC<{ description: ServerDescription }> = () => {
+  const classes = useStyles()
+  const result = useServerRoomQuery({
+    pollInterval: 10 * 1000
+  })
+  const info = useResult(result, ({ room: rooms }) => {
+    return <>
+      <List disablePadding>
+          { rooms.length > 0 ?
+            rooms.map(room => {
+              const cid = room.contentId.toUpperCase()
+              const gi = GameMap[cid]
+              return <>
+                <ListItem button className={classes.nested}>
+                  <ListItemText primary={`${room.hostPlayerName}: ${room.ip} (${room.nodeCount}/${room.nodeCountMax})`} secondary={gi?.name ?? cid} />
+                </ListItem>
+              </>
+            }) : <ListItem button className={classes.nested}>No room is opening</ListItem>
+          }
+      </List>
+    </>
+  })
   return <>
-    <List disablePadding>
-      <ListItem button>
-        <ListItemText primary="Starred" />
-      </ListItem>
-    </List>
+    { info }
   </>
 }
 

@@ -44,6 +44,10 @@ export function usePing({ server, interval = 10 * 1000, timeout = 10 * 1000}: Pi
       let timeoutId: number | undefined = undefined
       let lastTime: Date | undefined = undefined
       const ws = new WebSocket(`ws://${server}`, 'graphql-ws')
+      abort = () => {
+        ws.close()
+        timeoutId && window.clearTimeout(timeoutId)
+      }
       ws.onmessage = e => {
         const data = JSON.parse(e.data)
         if (data.type === 'data' && data.id === '1') {
@@ -52,19 +56,20 @@ export function usePing({ server, interval = 10 * 1000, timeout = 10 * 1000}: Pi
           ws.send(`{"id":"1","type":"stop"}`)
           ws.close()
         }
-      };
+      }
       ws.onclose = () => {
-        timeoutId && window.clearTimeout(timeoutId);
+        abort()
       }
       ws.onerror = e => {
-        rej(e);
+        rej(e)
+        abort()
       }
       ws.onopen = () => {
-        ws.send(`{"type":"connection_init","payload":{}}`);
+        ws.send(`{"type":"connection_init","payload":{}}`)
         timeoutId = window.setTimeout(() => {
           ws.send(PingText)
           lastTime = new Date()
-        }, 100);
+        }, 100)
       }
     }).then(ping => setResult({
       ping,
