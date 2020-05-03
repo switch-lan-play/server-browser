@@ -46,7 +46,6 @@ export function usePing({ server, interval = 10 * 1000, timeout = 10 * 1000}: Pi
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [])
   useEffect(() => {
-    console.log('hidden', hidden)
     if (hidden) {
       return // do nothing
     }

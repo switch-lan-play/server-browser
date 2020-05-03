@@ -12,22 +12,25 @@ query ServerRoomOld {
     hostPlayerName
   }
 }
+fragment RoomInfo on RoomInfo {
+  ip
+  contentId
+  hostPlayerName
+  sessionId
+  nodeCountMax
+  nodeCount
+  nodes {
+    ip
+    nodeId
+    isConnected
+    playerName
+  }
+  advertiseDataLen
+  advertiseData
+}
 query ServerRoom {
   room {
-    ip
-    contentId
-    hostPlayerName
-    sessionId
-    nodeCountMax
-    nodeCount
-    nodes {
-      ip
-      nodeId
-      isConnected
-      playerName
-    }
-    advertiseDataLen
-    advertiseData
+    ...RoomInfo
   }
 }
 subscription SubServerInfo {

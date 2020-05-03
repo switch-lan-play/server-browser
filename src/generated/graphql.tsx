@@ -92,6 +92,15 @@ export type ServerRoomOldQuery = (
   )> }
 );
 
+export type RoomInfoFragment = (
+  { __typename?: 'RoomInfo' }
+  & Pick<RoomInfo, 'ip' | 'contentId' | 'hostPlayerName' | 'sessionId' | 'nodeCountMax' | 'nodeCount' | 'advertiseDataLen' | 'advertiseData'>
+  & { nodes: Array<(
+    { __typename?: 'NodeInfo' }
+    & Pick<NodeInfo, 'ip' | 'nodeId' | 'isConnected' | 'playerName'>
+  )> }
+);
+
 export type ServerRoomQueryVariables = {};
 
 
@@ -99,11 +108,7 @@ export type ServerRoomQuery = (
   { __typename?: 'Query' }
   & { room: Array<(
     { __typename?: 'RoomInfo' }
-    & Pick<RoomInfo, 'ip' | 'contentId' | 'hostPlayerName' | 'sessionId' | 'nodeCountMax' | 'nodeCount' | 'advertiseDataLen' | 'advertiseData'>
-    & { nodes: Array<(
-      { __typename?: 'NodeInfo' }
-      & Pick<NodeInfo, 'ip' | 'nodeId' | 'isConnected' | 'playerName'>
-    )> }
+    & RoomInfoFragment
   )> }
 );
 
@@ -118,7 +123,24 @@ export type SubServerInfoSubscription = (
   ) }
 );
 
-
+export const RoomInfoFragmentDoc = gql`
+    fragment RoomInfo on RoomInfo {
+  ip
+  contentId
+  hostPlayerName
+  sessionId
+  nodeCountMax
+  nodeCount
+  nodes {
+    ip
+    nodeId
+    isConnected
+    playerName
+  }
+  advertiseDataLen
+  advertiseData
+}
+    `;
 export const ServerInfoDocument = gql`
     query ServerInfo {
   serverInfo {
@@ -190,23 +212,10 @@ export type ServerRoomOldQueryResult = ApolloReactCommon.QueryResult<ServerRoomO
 export const ServerRoomDocument = gql`
     query ServerRoom {
   room {
-    ip
-    contentId
-    hostPlayerName
-    sessionId
-    nodeCountMax
-    nodeCount
-    nodes {
-      ip
-      nodeId
-      isConnected
-      playerName
-    }
-    advertiseDataLen
-    advertiseData
+    ...RoomInfo
   }
 }
-    `;
+    ${RoomInfoFragmentDoc}`;
 
 /**
  * __useServerRoomQuery__

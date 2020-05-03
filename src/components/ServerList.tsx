@@ -9,17 +9,53 @@ import ExpandMore from '@material-ui/icons/ExpandMore'
 import PeopleIcon from '@material-ui/icons/People'
 import { ServerList as ServerListJson, ServerDescription } from 'server-list'
 import { ServerProvider } from './ServerProvider'
-import { useSubServerInfoSubscription, useServerRoomQuery } from 'generated/graphql'
+import { useSubServerInfoSubscription, useServerRoomQuery, RoomInfoFragment } from 'generated/graphql'
 import { useResult, usePing } from 'hooks'
-import Games from 'games.json'
 import { makeStyles } from '@material-ui/core/styles'
+import {  parseAdvertiseData } from 'games'
 
-const GameMap: Record<string, { name: string } | undefined> = Games
+function fromHex(hex: string) {
+  const buf = hex.match(/[0-9a-fA-F]{2}/gi)
+  if (!buf) {
+    throw new Error('Wrong hex')
+  }
+  return new Uint8Array(buf.map((h) => parseInt(h, 16))).buffer
+}
+
 const useStyles = makeStyles((theme) => ({
   nested: {
     paddingLeft: theme.spacing(4),
   },
+  nested2: {
+    paddingLeft: theme.spacing(8),
+  },
 }))
+
+const RoomInfo: React.FC<{ room: RoomInfoFragment }> = ({ room }) => {
+  const classes = useStyles()
+  const cid = room.contentId.toUpperCase()
+  const [ roomAdvertise, gi ] = parseAdvertiseData(cid, fromHex(room.advertiseData))
+  return <>
+    <ListItem className={classes.nested}>
+      <ListItemText
+        primary={`${room.hostPlayerName} (${room.nodeCount}/${room.nodeCountMax})`}
+        secondary={gi?.name ?? cid}
+      />
+    </ListItem>
+    { Object.keys(roomAdvertise).map(key => {
+      const value = roomAdvertise[key]
+      return <ListItem key={key} className={classes.nested2}>
+        <ListItemText primary={value} secondary={key} />
+      </ListItem>
+    }) }
+    { room.nodes.map(node => {
+      return <ListItem key={node.ip} className={classes.nested2}>
+        <ListItemText primary={node.playerName} secondary={node.ip} />
+      </ListItem>
+    })}
+
+  </>
+}
 
 const ServerDetail: React.FC<{ description: ServerDescription }> = () => {
   const classes = useStyles()
@@ -31,14 +67,8 @@ const ServerDetail: React.FC<{ description: ServerDescription }> = () => {
       <List disablePadding>
           { rooms.length > 0 ?
             rooms.map(room => {
-              const cid = room.contentId.toUpperCase()
-              const gi = GameMap[cid]
-              return <>
-                <ListItem button className={classes.nested}>
-                  <ListItemText primary={`${room.hostPlayerName}: ${room.ip} (${room.nodeCount}/${room.nodeCountMax})`} secondary={gi?.name ?? cid} />
-                </ListItem>
-              </>
-            }) : <ListItem button className={classes.nested}>No room is opening</ListItem>
+              return <RoomInfo key={room.ip} room={room} />
+            }) : <ListItem className={classes.nested}>No room is opening</ListItem>
           }
       </List>
     </>
@@ -74,7 +104,7 @@ const ServerItem: React.FC<{ description: ServerDescription }> = ({ description 
         { expand }
       </ListItemSecondaryAction>
     </ListItem>
-    <Collapse in={open} timeout="auto" unmountOnExit>
+    <Collapse in={open} timeout='auto' unmountOnExit>
       <ServerDetail description={description} />
     </Collapse>
   </>
